@@ -1,0 +1,46 @@
+---
+title: "HW1"
+author: "Jacob Elrod"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Loading in:
+
+Load in and rename Dataset, make sex a factor for convienence 
+```{r}
+library(readxl)
+df <- read_excel("~/Copy of Head morphology.xlsx")
+
+
+str(df)
+df$SEX<- as.factor(df$SEX) 
+
+```
+
+# Split, Apply, Combine
+
+Take dataset, omit NAs, group by sex and species, take the mean of teeth number by sex and species
+```{r}
+df_sum<-df%>% na.omit() %>% group_by(SEX ,SPECIES) %>% summarize(mean_teeth = mean(TEETH_NUMBER))
+df_sum
+```
+# Plots
+First a density plot to show distributions of teeth number, to see if data is normal just in case we eventually want to do statistical tests.
+
+```{r}
+ggplot(df, aes(x = TEETH_NUMBER, fill = factor(SPECIES), )) + geom_density(alpha = .5)
+       
+```
+
+
+Next, a point plot using the average of each species, colored by sex.
+```{r}
+ggplot(df_sum, aes(x= SPECIES, y= mean_teeth, col = SEX))+geom_point()
+```
+# Analysis
+By the analysis and visualization, we can see that the overall mean and median of the number of teeth in snakes doesn't seem to vary much by sex of the snake(except for potentially  T.Mel no eat crayfish), but clearly differs by species. This could be further proven by a statistic test that compares means such as a t test for the male and female, and perhaps and ANOVA for the species.
